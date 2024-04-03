@@ -23,14 +23,10 @@ object KBD { // Ler teclas. Métodos retornam ‘0’..’9’,’#’,’*’ o
     }
 
     fun waitKey(timeout: Long): Char {
-        return if (timeout - Time.getTimeInMillis() >= 0 && HAL.isBit(DVAL_MASK)) {
-            getKey()
-        } else NONE.toChar()
+        val time = Time.getTimeInMillis()
+        while (Time.getTimeInMillis() - time < timeout) {
+            if(getKey() != NONE.toChar()) return getKey()
+        }
+        return NONE.toChar()
     }
-}
-
-fun main() {
-    HAL.init()
-    KBD.init()
-    println(KBD.getKey())
 }
