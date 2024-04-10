@@ -6,7 +6,7 @@ END KEYSCAN_tb;
 
 ARCHITECTURE arc_KEYSCAN_tb OF KEYSCAN_tb IS
 
-    COMPONENT KEYSCAN
+    COMPONENT KEY_SCAN
     PORT(
         Kscan : IN std_logic;
         Clk : IN std_logic;
