@@ -1,7 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-entity KEYSCAN is
+entity KEY_SCAN is
 Port(	Kscan : in std_logic;
 		Clk : in std_logic;
 		Reset : in std_logic;
@@ -10,9 +10,9 @@ Port(	Kscan : in std_logic;
 		Kpress : out std_logic;
 		K : out std_logic_vector(3 downto 0)
 		);
-end KEYSCAN;
+end KEY_SCAN;
 
-Architecture structural of KEYSCAN is
+Architecture structural of KEY_SCAN is
 Component COUNTER_UP is
 Port( dataIn : in std_logic_vector(3 downto 0);
 		RESET : in std_logic;
