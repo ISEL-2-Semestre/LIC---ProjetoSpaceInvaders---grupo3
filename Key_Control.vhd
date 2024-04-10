@@ -1,0 +1,49 @@
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+entity KEYCONTROL is
+Port(	Kack, Kpress, CLK, RESET : in std_logic;
+		Kscan, Kval : out std_logic
+		);
+end KEYCONTROL;
+
+architecture behavioral of KEYCONTROL is
+
+type STATE_TYPE is (STATE_1, STATE_2, STATE_3, STATE_4);
+
+signal CURRENT_STATE, NEXT_STATE : STATE_TYPE;
+
+begin
+CURRENT_STATE<= STATE_1 when RESET='1' else NEXT_STATE when rising_edge(CLK);
+
+GENERATENEXTSTATE:
+process (CURRENT_STATE,Kack, Kpress)
+	begin
+	case CURRENT_STATE is
+		when STATE_1 => if (Kpress='1') then 
+			                NEXT_STATE<= STATE_2;
+							 else 
+								 NEXT_STATE <= STATE_1;
+							 end if;
+		when STATE_2 => if (Kack='0') then 
+			                NEXT_STATE<= STATE_2;
+							 else 
+								 NEXT_STATE <= STATE_3;
+							 end if;
+		when STATE_3 => if(Kack='1') then
+								NEXT_STATE<= STATE_4;
+							else 
+								NEXT_STATE<= STATE_3;
+							end if;
+		when STATE_4 => if(Kpress='1') then 
+								NEXT_STATE <= STATE_3;
+								else 
+								NEXT_STATE <= STATE_1;
+								end if;
+		end case;
+end process;    
+Kscan<= '1' when ((CURRENT_STATE = STATE_1))
+			else '0';
+Kval<= '1' when ((CURRENT_STATE = STATE_2))
+			else '0';
+end behavioral;
