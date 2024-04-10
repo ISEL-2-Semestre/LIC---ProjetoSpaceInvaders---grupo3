@@ -1,0 +1,52 @@
+import isel.leic.utils.Time
+
+object KBD { // Ler teclas. Métodos retornam ‘0’..’9’,’#’,’*’ ou NONE.
+    const val NONE = 0;
+    const val DVAL_MASK = 0x10
+    const val KACK_MASK = 0x40
+    val MASK = 0x0F
+    val ARRAY = charArrayOf('1', '4', '7', '*',
+        '2', '5', '8', '0',
+        '3', '6', '9', '#')
+    var KEY_PRESSED = false
+    // Inicia a classe
+    fun init(){
+        KEY_PRESSED = HAL.isBit(DVAL_MASK)
+    }
+
+    // Retorna de imediato a tecla premida ou NONE se não há tecla premida.
+    fun getKey(): Char{
+        KEY_PRESSED = HAL.isBit(DVAL_MASK)
+        if(KEY_PRESSED){
+            HAL.setBits(KACK_MASK)
+            if (!KEY_PRESSED) {
+                HAL.clrBits(KACK_MASK)
+                return ARRAY[HAL.readBits(MASK)]
+            }
+        }
+        else return NONE.toChar()
+    }
+    //return ARRAY[HAL.readBits(MASK)]
+    // Retorna a tecla premida, caso ocorra antes do ‘timeout’ (representado em milissegundos), ou NONE caso contrário.
+    fun waitKey(timeout: Long): Char {
+        val START = Time.getTimeInMillis()
+        while (Time.getTimeInMillis() - START < timeout) {
+            if(getKey() != NONE.toChar()) return getKey()
+        }
+        return NONE.toChar()
+    }
+}
+
+fun main(){
+    HAL.init()
+    KBD.init()
+    println(KBD.waitKey(5000))
+    //println(KBD.waitKey(16000))
+    //println(KBD.waitKey(3000))
+    //println(KBD.waitKey(10000))
+    //println(KBD.waitKey(1000))
+    while (true){
+        val k = KBD.getKey()
+        if( k != KBD.NONE.toChar()) print(k)
+    }
+}
