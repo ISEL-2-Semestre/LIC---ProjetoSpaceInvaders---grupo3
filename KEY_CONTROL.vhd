@@ -1,13 +1,13 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-entity KEYCONTROL is
+entity KEY_CONTROL is
 Port(	Kack, Kpress, CLK, RESET : in std_logic;
 		Kscan, Kval : out std_logic
 		);
-end KEYCONTROL;
+end KEY_CONTROL;
 
-architecture behavioral of KEYCONTROL is
+architecture behavioral of KEY_CONTROL is
 
 type STATE_TYPE is (STATE_1, STATE_2, STATE_3, STATE_4);
 
