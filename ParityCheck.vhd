@@ -1,14 +1,14 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity ParityCheck is 
+entity PARITY_CHECK is 
     port(
     data, clk, Reset,  init: in std_logic;
     err: out std_logic
     );
-end ParityCheck;
+end PARITY_CHECK;
 
-architecture ParityCheck_Arch of ParityCheck is
+architecture PARITY_CHECK_Arch of PARITYCHECK is
 
 component CounterUp is
     port(
@@ -29,4 +29,4 @@ Cont: CounterUp port map (dataIn => "0000" , PL => '0', CE => data, CLK => Clk ,
 
 err <= sum(0);
 
-end ParityCheck_Arch;
+end PARITY_CHECK_Arch;
