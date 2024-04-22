@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity SHIFT_REG_9 is
 Port( D_9bit : in std_logic_vector(8 downto 0);
 		PL : in std_logic;
-		Data : in std_logic;
+		data : in std_logic;
 		EN : in std_logic;
 		clk : in std_logic;
 		Clear : in std_logic;
