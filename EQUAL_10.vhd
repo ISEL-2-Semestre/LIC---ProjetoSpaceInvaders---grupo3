@@ -12,6 +12,6 @@ Architecture logicFunction of EQUAL_10 is
 
 Begin
  
-Y <= (D(0) xnor '1') and (D(1) xnor '0') and (D(2) xnor '1') and (D(3) xnor '0');
+Y <= (D(0) xnor '0') and (D(1) xnor '1') and (D(2) xnor '0') and (D(3) xnor '1');
 
 End logicFunction;
