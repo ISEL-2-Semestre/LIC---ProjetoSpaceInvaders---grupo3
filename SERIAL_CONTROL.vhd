@@ -2,7 +2,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
 entity SERIAL_CONTROL is
-Port(	enRx, accept, CLK, pFlag, dFlag, RXerror, RESET : in std_logic;
+Port(	nenRx, accept, CLK, pFlag, dFlag, RXerror, RESET : in std_logic;
 		wr, init, DXval : out std_logic
 		);
 end SERIAL_CONTROL;
@@ -17,10 +17,10 @@ begin
 CURRENT_STATE<= STATE_1 when RESET='1' else NEXT_STATE when rising_edge(CLK);
 
 GENERATENEXTSTATE:
-process (CURRENT_STATE,enRx, accept, pFlag, dFlag, RXerror)
+process (CURRENT_STATE,nenRx, accept, pFlag, dFlag, RXerror)
 	begin
 	case CURRENT_STATE is
-		when STATE_1 => if (enRx='1') then 
+		when STATE_1 => if (nenRx='1') then 
 			                NEXT_STATE<= STATE_2;
 							 else 
 								 NEXT_STATE <= STATE_1;
@@ -32,9 +32,11 @@ process (CURRENT_STATE,enRx, accept, pFlag, dFlag, RXerror)
 							 end if;
 		when STATE_3 => if(pFlag='1' and RXerror='0') then
 								NEXT_STATE<= STATE_4;
-							else if(pFlag='1' and RXerror='1') then
+								end if;
+							 if(pFlag='1' and RXerror='1') then
 								NEXT_STATE<= STATE_1;
-							else if(pFlag='0') then
+							 end if;
+							 if(pFlag='0') then
 								NEXT_STATE<= STATE_3;
 							end if;
 		when STATE_4 => if(accept='1') then 
