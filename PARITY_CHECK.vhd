@@ -5,7 +5,6 @@ entity PARITY_CHECK is
 port(	data 		: in std_logic;
 		clk 		: in std_logic;
 		init		: in std_logic;
-		RESET 	    : in std_logic;
 		err		    : out std_logic
 		);
 end PARITY_CHECK;
