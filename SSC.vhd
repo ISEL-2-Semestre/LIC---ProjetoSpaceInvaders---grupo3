@@ -12,7 +12,7 @@ Port( nSCsel : in std_logic;
 End SSC;
 
 Architecture structural of SSC is
-Component SERIAL_RECIEVER_SSC is
+Component SERIAL_RECEIVER_SSC is
 Port( SDX: in std_logic;
 		SCLK: in std_logic;
 		nSS: in std_logic;
