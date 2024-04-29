@@ -26,7 +26,7 @@ signal sum: std_logic_vector(3 downto 0);
 
 begin
 
-Cont: COUNTER_UP port map (dataIn => "0000" , PL => '0', CE => data, CLK => Clk , RESET => RESET, Q => sum);
+Cont: COUNTER_UP port map (dataIn => "0000" , PL => '0', CE => data, CLK => Clk , RESET => init, Q => sum);
 
 err <= sum(0);
 
