@@ -32,7 +32,7 @@ Port( Dval : in std_logic;
 		Dout : out std_logic_vector(6 downto 0);
 		done : out std_logic
 		);
-End SCORE_DISPATCHER;
+End Component;
 
 signal carry_Dval : std_logic;
 signal carry_Din : std_logic_vector(6 downto 0);
