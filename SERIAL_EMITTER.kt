@@ -1,4 +1,3 @@
-import isel.leic.UsbPort
 object SerialEmitter {
     // Envia tramas para os diferentes módulos Serial Receiver.
     private val LCDset_MASK = 0x01
