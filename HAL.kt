@@ -15,7 +15,7 @@ object HAL {
 
     fun writeBits(mask: Int, value: Int) {
         clrBits(mask)
-        setBits(value /*and mask */)
+        setBits(value and mask)
     }
 
     fun setBits(mask: Int) {
