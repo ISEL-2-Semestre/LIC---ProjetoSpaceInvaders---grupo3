@@ -1,6 +1,6 @@
 import isel.leic.utils.Time
 
-const val DVAL_MASK = 0x10
+const val DVALMASK = 0x10
 const val SMASK = 0x0F
 val output = HAL.readBits(SMASK)
 val teclado = charArrayOf('1', '4', '7', '*',
@@ -12,12 +12,12 @@ object KBD { // Ler teclas. Métodos retornam ‘0’..’9’,’#’,’*’ o
     const val NONE = 0;
     var output = 0
     fun init() {
-        keypress = HAL.isBit(DVAL_MASK)
+        keypress = HAL.isBit(DVALMASK)
     }
 
     // Retorna de imediato a tecla premida ou NONE se não há tecla premida.
     fun getKey(): Char {
-        keypress = HAL.isBit(DVAL_MASK)
+        keypress = HAL.isBit(DVALMASK)
         if (keypress) return teclado[HAL.readBits(SMASK)]
         else return NONE.toChar()
     }
