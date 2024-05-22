@@ -61,14 +61,15 @@ begin
 	
 	wait for MCLK_PERIOD;
 	
-	ACK_TB <= '0';
+	ACK_TB <= '1';
 	
 	wait for MCLK_PERIOD*2;
 	
-	D_TB <= "1010";
+	D_TB <= "1011";
 	
 	wait for MCLK_PERIOD;
 	
+	ACK_TB <= '0';
 	Load_TB <= '1';	
 	
 	wait for MCLK_PERIOD;
@@ -77,7 +78,7 @@ begin
 	
 	wait for MCLK_PERIOD;
 	
-	ACK_TB <= '0';
+	ACK_TB <= '1';
 	
 	wait for MCLK_PERIOD*2;
 	
