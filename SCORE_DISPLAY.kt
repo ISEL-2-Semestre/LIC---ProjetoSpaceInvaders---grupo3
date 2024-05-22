@@ -1,4 +1,3 @@
-import isel.leic.UsbPort
 object ScoreDisplay { // Controla o mostrador de pontuação.
     // Inicia a classe, estabelecendo os valores iniciais.
     fun init(){
