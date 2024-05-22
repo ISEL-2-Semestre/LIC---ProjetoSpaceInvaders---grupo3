@@ -1,47 +1,82 @@
-import isel.leic.UsbPort
+import isel.leic.utils.Time
 
-object LCD { // Escreve no LCD usando a interface a 8 bits.
+object LCD {
     private const val LINES = 2
-    private const val COLS = 16 // Dimensão do display.
-    private const val SERIAL_INTERFACE = false // Define se a interface é Série ou Paralela
-    // Escreve um byte de comando/dados no LCD em paralelo
-    private fun writeByteParallel(rs: Boolean, data: Int) {
+    private const val COLS = 16
+    private const val SERIAL_INTERFACE = false
+    private const val EMASK = 0x20
+    private const val RSMASK = 0x40
+    private const val CLKREGMASK = 0x10
+    private const val DATAMASK = 0x0F
+    private fun writeByteSerial(rs: Boolean, data: Int){}
 
+    fun writeByteParallel(rs: Boolean, data: Int) {
+        if (rs) HAL.setBits(RSMASK) else HAL.clrBits(RSMASK)
+        val h = data.shr(4)
+        HAL.writeBits(DATAMASK, h)
+        HAL.clrBits(CLKREGMASK)
+        HAL.setBits(CLKREGMASK)
+        HAL.writeBits(DATAMASK, data)
+        HAL.setBits(EMASK)
+        HAL.clrBits(CLKREGMASK)
+        HAL.setBits(CLKREGMASK)
+        HAL.clrBits(EMASK)
     }
-    // Escreve um byte de comando/dados no LCD em série
-    private fun writeByteSerial(rs: Boolean, data: Int) {
 
+    fun writeByte(rs: Boolean, data: Int) {
+        if(SERIAL_INTERFACE) writeByteSerial(rs, data)
+        else writeByteParallel(rs, data)
     }
-    // Escreve um byte de comando/dados no LCD
-    private fun writeByte(rs: Boolean, data: Int) {
 
+    fun writeCMD(data: Int) {
+        writeByte(false, data)
     }
-    // Escreve um comando no LCD
-    private fun writeCMD(data: Int) {
 
+    fun writeDATA(data: Int) {
+        writeByte(true, data)
     }
-    // Escreve um dado no LCD
-    private fun writeDATA(data: Int) {
 
-    }
-    // Envia a sequência de iniciação para comunicação a 8 bits.
     fun init() {
-
+        Time.sleep(20)
+        writeCMD(0x30)
+        Time.sleep(5)
+        writeCMD(0x30)
+        Time.sleep(1)
+        writeCMD(0x30)
+        writeCMD(0x38)
+        writeCMD(0x08)
+        writeCMD(0x01)
+        Time.sleep(2)
+        writeCMD(0x06)
+        writeCMD(0x0E)
     }
-    // Escreve um caráter na posição corrente.
+
     fun write(c: Char) {
-
+        print(c)
+        writeDATA(c.code)
     }
-    // Escreve uma string na posição corrente.
+
     fun write(text: String) {
-
+        for(i in text) {
+            println(i)
+            write(i)
+        }
     }
-    // Envia comando para posicionar cursor (‘line’:0..LINES-1 , ‘column’:0..COLS-1)
+
     fun cursor(line: Int, column: Int) {
-
+        if(column in 0 until COLS) {
+            var address = column
+            if(line in 0 until LINES && line==1) address += 0x40
+            writeCMD(0x80 or address)
+        }
     }
-    // Envia comando para limpar o ecrã e posicionar o cursor em (0,0)
+
     fun clear() {
-
+        writeCMD(0x01)
     }
+}
+
+fun main() {
+    HAL.init()
+    LCD.init()
 }
