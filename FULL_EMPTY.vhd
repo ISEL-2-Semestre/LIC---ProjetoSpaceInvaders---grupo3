@@ -8,7 +8,7 @@ Port( CD, CU, CLK, RESET : in std_logic;
 End FULL_EMPTY;
 
 Architecture structure of FULL_EMPTY is
-Component EQUAL_7 is
+Component EQUAL_8 is
 Port( D : in std_logic_vector( 3 downto 0);
 		Y : out std_logic
 		);
@@ -32,7 +32,7 @@ begin
 
 U1 : COUNTER_UP_DOWN port map (CU => CU, CD => CD, RESET => RESET, CLK => CLK, Q => carry_Q);
 
-U2 : EQUAL_7 port map (D => carry_equals, Y => full);
+U2 : EQUAL_8 port map (D => carry_equals, Y => full);
 
 U3 : EQUAL_0 port map (D => carry_equals, Y => empty);
 
