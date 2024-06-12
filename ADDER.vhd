@@ -28,4 +28,4 @@ U4: FA port map (A => A(3), B=> B(3), Ci => carry(2), S => S(3), Co => carry(3))
 
 Co <= carry(3);
 
-End structural;
+End structural; --a
