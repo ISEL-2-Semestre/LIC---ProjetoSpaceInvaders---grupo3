@@ -36,8 +36,8 @@ process (CURRENT_STATE,Dval)
 							end if;
 		end case;
 end process;    
-Wrl<= '1' 		when ((CURRENT_STATE = STATE_2 or CURRENT_STATE = STATE_3))
+Wrl<= '1' 		when (CURRENT_STATE = STATE_2 )--or CURRENT_STATE = STATE_3
 					else '0';
-done<= '1' 		when ((CURRENT_STATE = STATE_3))
+done<= '1' 		when (CURRENT_STATE = STATE_3)
 					else '0';
 end behavioral;

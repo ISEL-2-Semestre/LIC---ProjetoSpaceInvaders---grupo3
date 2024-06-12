@@ -4,6 +4,7 @@ USE ieee.std_logic_1164.all;
 Entity SLCDC is
 Port( nLCDsel : in std_logic;
 		SCLK : in std_logic;
+		CLK : in std_logic;
 		SDX : in std_logic;
 		RESET : in std_logic;
 		Wrl : out std_logic;
@@ -42,7 +43,7 @@ Begin
 
 U1: SERIAL_RECEIVER port map(SDX => SDX, SCLK => SCLK, nSS => nLCDsel, accept => carry_done,
  RESET => RESET, D => carry_Din, DXval => carry_Dval);
-U2: LCD_DISPATCHER port map(Dval => carry_Dval, Din => carry_Din, RESET => RESET, CLK => SCLK,
+U2: LCD_DISPATCHER port map(Dval => carry_Dval, Din => carry_Din, RESET => RESET, CLK => CLK,
 Wrl => Wrl, Dout => Dout, done => carry_done);
  
 End structural;
