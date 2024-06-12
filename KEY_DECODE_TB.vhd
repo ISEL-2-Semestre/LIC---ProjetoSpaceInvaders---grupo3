@@ -31,6 +31,7 @@ begin
 										RESET => RESET_TB,
 										Kack => Kack_TB,
 										LIN => LIN_TB,
+										COL => COL_TB,
 										K => K_TB,
 										Kval => Kval_TB
 										);
@@ -56,7 +57,7 @@ begin
 	
 	wait for CLK_PERIOD*5;
 	
-	LIN_TB <= "1011";
+	LIN_TB <= "0111";
 
 	wait for CLK_PERIOD;
 	
@@ -72,11 +73,11 @@ begin
 	
 	wait for CLK_PERIOD*5;
 	
-	LIN_TB <= "1110";
+	LIN_TB <= "1010";
 	
 	wait for CLK_PERIOD;
 	
-	LIN_TB <= "1111";
+	LIN_TB <= "1100";
 	
 	wait for CLK_PERIOD;
 	

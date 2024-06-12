@@ -113,12 +113,17 @@ begin
 	
 	wait for CLK_PERIOD;
 	
-	init_TB <= '1'; --4
 	data_TB <= '0';
+
+	wait for CLK_PERIOD;
+	
+	init_TB <= '1'; --4
+	data_TB <= '1';
 	
 	wait for CLK_PERIOD;
 	
 	init_TB <= '0';
+	data_TB <= '0';
 	
 	wait for CLK_PERIOD*3;
 	
