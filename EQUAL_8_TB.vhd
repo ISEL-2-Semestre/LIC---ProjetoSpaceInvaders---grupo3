@@ -1,12 +1,12 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-Entity EQUAL_7_TB is
-end EQUAL_7_TB;
+Entity EQUAL_8_TB is
+end EQUAL_8_TB;
 
-Architecture arc_EQUAL_7_TB of EQUAL_7_TB is
+Architecture arc_EQUAL_8_TB of EQUAL_8_TB is
 
-Component EQUAL_7 is
+Component EQUAL_8 is
 Port(	D : in std_logic_vector( 3 downto 0);
 		Y : out std_logic
 		);
@@ -17,7 +17,7 @@ signal Y_TB : std_logic;
 
 begin
 
-UUT: EQUAL_7 
+UUT: EQUAL_8 
 		port map(D => D_TB,
 					Y => Y_TB
 					);
