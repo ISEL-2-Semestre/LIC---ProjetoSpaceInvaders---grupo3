@@ -1,86 +1,42 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.all;
 
-Entity FULL_EMPTY_TB is
-end FULL_EMPTY_TB;
-
-Architecture arc_FULL_EMPTY_TB of FULL_EMPTY_TB is
-
-Component FULL_EMPTY is
+Entity FULL_EMPTY is
 Port( CD, CU, CLK, RESET : in std_logic;
 		empty, full : out std_logic
         );
+End FULL_EMPTY;
+
+Architecture structure of FULL_EMPTY is
+Component EQUAL_7 is
+Port( D : in std_logic_vector( 3 downto 0);
+		Y : out std_logic
+		);
 End Component;
 
+Component EQUAL_0 is
+Port( D : in std_logic_vector( 3 downto 0);
+		Y : out std_logic
+		);
+End Component;
 
-constant MCLK_PERIOD : time := 20 ns;
-constant MCLK_HALF_PERIOD : time := MCLK_PERIOD / 2;
+Component COUNTER_UP_DOWN is
+Port( CU, CD, RESET, CLK : in std_logic;
+		Q : out std_logic_vector
+        );
+End Component;
 
-signal CU_TB : std_logic;
-signal CD_TB : std_logic;
-signal CLK_TB : std_logic;
-signal RESET_TB : std_logic;
-signal empty_TB : std_logic;
-signal full_TB : std_logic;
+signal carry_equals, carry_Q : std_logic_vector(3 downto 0);
 
 begin
 
-UUT: FULL_EMPTY 
-		port map(CD => CD_TB,
-					CU => CU_TB,
-					CLK => CLK_TB,
-					RESET => RESET_TB,
-					empty => empty_TB,
-					full => full_TB);
+U1 : COUNTER_UP_DOWN port map (CU => CU, CD => CD, RESET => RESET, CLK => CLK, Q => carry_Q);
 
-clk_gen : process
-begin
-		CLK_TB <= '1';
-		wait for MCLK_HALF_PERIOD;
-		CLK_TB <= '0';
-		wait for MCLK_HALF_PERIOD;
-end process;
+U2 : EQUAL_7 port map (D => carry_equals, Y => full);
 
-stimulus: process 
-begin
+U3 : EQUAL_0 port map (D => carry_equals, Y => empty);
 
-	CU_TB <= '0';
-	CD_TB <= '0';
-	RESET_TB <= '1';
-	
-	wait for MCLK_PERIOD;
-	
-	RESET_TB <= '0';
-	
-	wait for MCLK_PERIOD*2;
-	
-	CU_TB <= '1';
-	
-	wait for MCLK_PERIOD*4;
-	
-	CU_TB <= '0';
-	
-	wait for MCLK_PERIOD;
-	
-	CD_TB <= '1';
-	
-	wait for MCLK_PERIOD*3;
-	
-	CD_TB <= '0';
-	CU_TB <= '1';
-	
-	wait for MCLK_PERIOD*6;
-	
-	CD_TB <= '1';
-	CU_TB <= '0';
-	
-	wait for MCLK_PERIOD;
-	
-	CU_TB <= '1';
-	CD_TB <= '0';
-	
-	wait;
-	
-	end process;
-	
-	end architecture;
+carry_equals(2 downto 0) <= carry_Q(2 downto 0);
+carry_equals(3) <= '0';
+
+end architecture;
