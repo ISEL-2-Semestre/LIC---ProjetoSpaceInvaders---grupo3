@@ -1,35 +1,55 @@
-object TUI{
-    fun init() {
-        HAL.init()
-        KBD.init()
-        LCD.init()
-        SerialEmitter.init()
-        var line = 0
+import isel.leic.utils.Time
 
-        while (true) {
-            val key = KBD.waitKey(1000) // espera 1 segundo ou obtém a tecla pressionada
-            when (key) {
-                '0' -> { LCD.write(key) }
-                '1' -> {  LCD.write(key)}
-                '2' -> { LCD.write(key) }
-                '3' -> {  LCD.write(key)}
-                '4' -> { LCD.write(key) }
-                '5' -> { LCD.write(key) }
-                '6' -> {LCD.write(key)  }
-                '7' -> {LCD.write(key)  }
-                '8' -> { LCD.write(key) }
-                '9' -> {LCD.write(key)  }
-                // adicione mais casos aqui para outras teclas
-                '*' -> {
-                    LCD.clear() // apaga o display
+const val HOUR= 3600000L
+const val UP = 0
+const val DOWN = 1
+fun TUI() {
+    KBD.init()
+    LCD.init()
+    SerialEmitter.init()
+    ScoreDisplay.init()
+    ScoreDisplay.off(false)
+
+    var cursor = UP
+    var key = ' '
+    val invaders = mutableListOf<Char>()
+    var score = 0
+    var count = 0
+
+    LCD.cursor(0,2)
+    LCD.write("Space Invaders")
+    LCD.cursor(1,10)
+    LCD.write("Grupo3")
+
+    val startup = KBD.waitKey(HOUR)
+
+    if (startup == '*'){
+        LCD.clear()
+        LCD.cursor(cursor,0)
+        LCD.write("}")
+        while(true){
+            Time.sleep(500)
+            ScoreDisplay.setScore(score)
+            val input = KBD.getKey()
+
+            when (input){
+                in '0'..'9' -> {
+                    key = input
+                    LCD.cursor(cursor,0)
+                    LCD.write(key)
                 }
-                '#' -> {
-                    line = 1 - line // muda de linha
-                    LCD.cursor(line, 0)
+                '*' ->{
+                    LCD.cursor(cursor,0)
+                    LCD.write("  ")
+                    if (cursor == UP) cursor = DOWN
+                    if (cursor == DOWN) cursor = UP
+                    LCD.cursor(cursor,0)
+
                 }
             }
+
         }
     }
 }
 
-
+fun main(){TUI()}
