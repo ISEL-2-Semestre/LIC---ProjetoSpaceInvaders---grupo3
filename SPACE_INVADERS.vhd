@@ -66,12 +66,13 @@ signal carry_input, carry_output : std_logic_vector(7 downto 0);
 
 Begin
 
-U1: SSC port map(nSCsel => carry_output(3), SCLK => carry_output(1), CLK => CLK, SDX => carry_output(0), RESET => RESET, HEX0 => HEX0, HEX1 => HEX1, HEX2 => HEX2, HEX3 => HEX3, HEX4 => HEX4, HEX5 => HEX5);
-U2: SLCDC port map(nLCDsel => carry_output(2), SCLK => carry_output(1), CLK => CLK, SDX => carry_output(0), RESET => RESET, Wrl => Wrl, Dout => DoutLCD);
-U3: KEYBOARD_READER port map(LIN => LIN, ACK => carry_output(4), CLK => CLK, RESET => RESET, COL => COL, Q => carry_input(4 downto 1), Dval => carry_input(5));
+U1: SSC port map(nSCsel => carry_output(1), SCLK => carry_output(4), CLK => CLK, SDX => carry_output(3), RESET => RESET, HEX0 => HEX0, HEX1 => HEX1, HEX2 => HEX2, HEX3 => HEX3, HEX4 => HEX4, HEX5 => HEX5);
+U2: SLCDC port map(nLCDsel => carry_output(0), SCLK => carry_output(4), CLK => CLK, SDX => carry_output(3), RESET => RESET, Wrl => Wrl, Dout => DoutLCD);
+U3: KEYBOARD_READER port map(LIN => LIN, ACK => carry_output(7), CLK => CLK, RESET => RESET, COL => COL, Q => carry_input(3 downto 0), Dval => carry_input(4));
 U4: UsbPort port map(inputPort => carry_input, outputPort => carry_output);
 
-carry_input(0) <= M;
-accept <= Coin;
+carry_input(7) <= M;
+carry_input(6) <= Coin;
+accept <= carry_output(6);
 
 End structural;
