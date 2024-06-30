@@ -63,6 +63,8 @@ fun APP() {
                         if (key == '5') {
                             coin = 0
                             games = 0
+                            FileAccess().clearFile("statistics.txt")
+                            Statistics().totalGamesAndCoins(games,coin/2)
                         }
                     }
                 }
@@ -158,7 +160,16 @@ fun APP() {
             val values = putNames(coin, score)
             coin = values.first
             val name = values.second
+            Scores().writeScore(score, name)
+            val scores = Statistics().getScores("SIG_scores")
+            val orderedScores = Statistics().orderAndLimitScores(scores,20)
+            FileAccess().clearFile("SIG_scores")
+            orderedScores.forEach {
+                Scores().writeScore(it.score,it.name)
+            }
             games++
+            FileAccess().clearFile("statistics.txt")
+            Statistics().totalGamesAndCoins(games,coin/2)
         }
     }
 }
@@ -178,7 +189,7 @@ fun shootingMode(l: Int, s: Int): Int  {
             in 100..200 -> 180L
             else -> 150L
         }
-        val keyValue = KBD.waitKey(time)
+        val keyValue = KBD.waitKey(20)
         when (keyValue) {
             in '0'..'9' -> {
                 key = keyValue
@@ -305,6 +316,7 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
                 val letterPosNow = TUI.findLetterPos(letters, name[cursorPos - CURSOR_START])
                 letterPos = letterPosNow
                 LCD.write(letters[letterPos])
+                name[cursorPos-CURSOR_START] = letters[letterPos]
             }
 
             '8' -> {
@@ -319,7 +331,7 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
             }
         }
     }
-    val n = name.toString().trim()
+    val n = name.joinToString(separator = "").trim()
     return Pair(coin, n)
 }
 
