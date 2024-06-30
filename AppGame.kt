@@ -80,7 +80,16 @@ fun APP() {
                     }
                 }
                 '0' -> {
-
+                    val line = 0
+                    val score = 0
+                    LCD.clear()
+                    LCD.cursor(0, 0)
+                    LCD.write("]")
+                    LCD.cursor(1, 0)
+                    LCD.write("]")
+                    LCD.cursor(line, 1)
+                    LCD.write("}")
+                    shootingMode(line, score)
                 }
             }
         }
@@ -96,11 +105,11 @@ fun APP() {
             LCD.cursor(1, MAX_COLUMN - coinString.length)
             LCD.write(coinString)
             var line = 0
-            var key = ' '
-            val invadersLine1 = mutableListOf<Char>()
-            val invadersLine2 = mutableListOf<Char>()
+            //var key = ' '
+            //val invadersLine1 = mutableListOf<Char>()
+            //val invadersLine2 = mutableListOf<Char>()
             var score = 0
-            var counter = 0
+            //var counter = 0
             M = Maintenance.readM()
             Time.sleep(80)
             if(M) break
@@ -135,94 +144,112 @@ fun APP() {
                 }
             }
             Time.sleep(80)
+            M = Maintenance.readM()
 
-            while (!M) {
-                ScoreDisplay.setScore(score)
-                val time = when (score) {
-                    in 0..49 -> 230L
-                    in 50..99 -> 200L
-                    in 100..200 -> 180L
-                    else -> 150L
-                }
-                val keyValue = KBD.waitKey(time)
-                when (keyValue) {
-                    in '0'..'9' -> {
-                        key = keyValue
-                        LCD.cursor(line, 0)
-                        LCD.write(key)
-                    }
-
-                    '*' -> {
-                        LCD.cursor(line, 0)
-                        LCD.write(']')
-                        LCD.cursor(line, 1)
-                        LCD.write(' ')
-                        line = if (line == 0) 1 else 0
-                        LCD.cursor(line, 1)
-                        LCD.write('}')
-                        key = ' '
-                    }
-
-                    '#' -> {
-                        if (line == 0) {
-                            if (invadersLine1.size > 0 && invadersLine1[0] == key) {
-                                LCD.cursor(line, MAX_COLUMN - invadersLine1.size)
-                                val invaderValue1 = invadersLine1[0].toString().toInt()
-                                invadersLine1.removeAt(0)
-                                LCD.write(' ')
-                                LCD.cursor(line, 0)
-                                LCD.write(']')
-                                refreshInvaders(invadersLine1, 0)
-                                score += invaderValue1 + 1
-                            }
-                        } else {
-                            if (invadersLine2.size > 0 && invadersLine2[0] == key) {
-                                LCD.cursor(line, MAX_COLUMN - invadersLine2.size)
-                                val invaderValue2 = invadersLine2[0].toString().toInt()
-                                invadersLine2.removeAt(0)
-                                LCD.write(' ')
-                                LCD.cursor(line, 0)
-                                LCD.write(']')
-                                refreshInvaders(invadersLine2, 1)
-                                score += invaderValue2 + 1
-                            }
-                        }
-                        key = ' '
-                    }
-                }
-                counter++
-
-                if (counter == 4) {
-                    val invaderLine = intArrayOf(1, 2).random()
-                    if (invadersLine1.size >= 14 || invadersLine2.size >= 14) {
-                        Time.sleep(300)
-                        LCD.clear()
-                        LCD.cursor(0, 0)
-                        LCD.write("*** Game Over **")
-                        LCD.cursor(1, 0)
-                        LCD.write("Score: $score")
-                        Time.sleep(3000)
-                        break
-                    }
-                    if (invaderLine == 1) {
-                        createInvaders(invadersLine1, 0)
-                    } else {
-                        createInvaders(invadersLine2, 1)
-                    }
-                    counter = 0
-                }
+            if (!M) {
+                score = shootingMode(line, score)
             }
+
             Time.sleep(80)
 
             if(M) break
             Time.sleep(80)
 
-            coin = putNames(coin, score)
+            val values = putNames(coin, score)
+            coin = values.first
+            val name = values.second
             games++
         }
     }
 }
-fun putNames(c: Int, score: Int): Int {
+
+fun shootingMode(l: Int, s: Int): Int  {
+    var line = l
+    var key = ' '
+    val invadersLine1 = mutableListOf<Char>()
+    val invadersLine2 = mutableListOf<Char>()
+    var score = s
+    var counter = 0
+    while (true) {
+        ScoreDisplay.setScore(score)
+        val time = when (score) {
+            in 0..49 -> 230L
+            in 50..99 -> 200L
+            in 100..200 -> 180L
+            else -> 150L
+        }
+        val keyValue = KBD.waitKey(time)
+        when (keyValue) {
+            in '0'..'9' -> {
+                key = keyValue
+                LCD.cursor(line, 0)
+                LCD.write(key)
+            }
+
+            '*' -> {
+                LCD.cursor(line, 0)
+                LCD.write(']')
+                LCD.cursor(line, 1)
+                LCD.write(' ')
+                line = if (line == 0) 1 else 0
+                LCD.cursor(line, 1)
+                LCD.write('}')
+                key = ' '
+            }
+
+            '#' -> {
+                if (line == 0) {
+                    if (invadersLine1.size > 0 && invadersLine1[0] == key) {
+                        LCD.cursor(line, MAX_COLUMN - invadersLine1.size)
+                        val invaderValue1 = invadersLine1[0].toString().toInt()
+                        invadersLine1.removeAt(0)
+                        LCD.write(' ')
+                        LCD.cursor(line, 0)
+                        LCD.write(']')
+                        refreshInvaders(invadersLine1, 0)
+                        score += invaderValue1 + 1
+                    }
+                } else {
+                    if (invadersLine2.size > 0 && invadersLine2[0] == key) {
+                        LCD.cursor(line, MAX_COLUMN - invadersLine2.size)
+                        val invaderValue2 = invadersLine2[0].toString().toInt()
+                        invadersLine2.removeAt(0)
+                        LCD.write(' ')
+                        LCD.cursor(line, 0)
+                        LCD.write(']')
+                        refreshInvaders(invadersLine2, 1)
+                        score += invaderValue2 + 1
+                    }
+                }
+                key = ' '
+            }
+        }
+        counter++
+
+        if (counter == 4) {
+            val invaderLine = intArrayOf(1, 2).random()
+            if (invadersLine1.size >= 14 || invadersLine2.size >= 14) {
+                Time.sleep(300)
+                LCD.clear()
+                LCD.cursor(0, 0)
+                LCD.write("*** Game Over **")
+                LCD.cursor(1, 0)
+                LCD.write("Score: $score")
+                Time.sleep(3000)
+                break
+            }
+            if (invaderLine == 1) {
+                createInvaders(invadersLine1, 0)
+            } else {
+                createInvaders(invadersLine2, 1)
+            }
+            counter = 0
+        }
+    }
+    return score
+}
+
+fun putNames(c: Int, score: Int): Pair<Int, String> {
     val letters = ('A'..'Z').toList().toCharArray()
     var letterPos = 0
     var cursorPos = CURSOR_START
@@ -234,7 +261,7 @@ fun putNames(c: Int, score: Int): Int {
     LCD.write("Name:")
     LCD.cursor(0, cursorPos)
     LCD.write(letters[letterPos])
-    val name = charArrayOf('A', 'A', 'A', 'A', 'A', 'A', 'A', 'A')
+    val name = charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
 
     while (true) {
         val key = KBD.getKey()
@@ -277,9 +304,7 @@ fun putNames(c: Int, score: Int): Int {
                 LCD.cursor(0, cursorPos)
                 val letterPosNow = TUI.findLetterPos(letters, name[cursorPos - CURSOR_START])
                 letterPos = letterPosNow
-                if (letterPos == 0) {
-                    LCD.write(letters[letterPos])
-                }
+                LCD.write(letters[letterPos])
             }
 
             '8' -> {
@@ -294,7 +319,8 @@ fun putNames(c: Int, score: Int): Int {
             }
         }
     }
-    return coin
+    val n = name.toString().trim()
+    return Pair(coin, n)
 }
 
 fun main(){
