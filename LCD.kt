@@ -1,14 +1,11 @@
 import isel.leic.utils.Time
 
 object LCD {
-    private const val LINES = 2
-    private const val COLS = 16
-    private const val SERIAL_INTERFACE = false
+    private const val SERIAL_INTERFACE = true
     private const val EMASK = 0x20
     private const val RSMASK = 0x40
     private const val CLKREGMASK = 0x10
     private const val DATAMASK = 0x0F
-    private fun writeByteSerial(rs: Boolean, data: Int){}
 
     fun writeByteParallel(rs: Boolean, data: Int) {
         if (rs) HAL.setBits(RSMASK) else HAL.clrBits(RSMASK)
@@ -21,6 +18,13 @@ object LCD {
         HAL.clrBits(CLKREGMASK)
         HAL.setBits(CLKREGMASK)
         HAL.clrBits(EMASK)
+    }
+
+    fun writeByteSerial(rs: Boolean, data: Int){
+        if (rs) {
+            SerialEmitter.send(SerialEmitter.Destination.LCD,1 + data.shl(1),9)}
+        else{
+            SerialEmitter.send(SerialEmitter.Destination.LCD,0 + data.shl(1),9)}
     }
 
     fun writeByte(rs: Boolean, data: Int) {
@@ -46,29 +50,21 @@ object LCD {
         writeCMD(0x38)
         writeCMD(0x08)
         writeCMD(0x01)
-        Time.sleep(2)
         writeCMD(0x06)
         writeCMD(0x0E)
     }
 
-    fun write(c: Char) {
-        print(c)
-        writeDATA(c.code)
-    }
+    fun write(c: Char) = writeDATA(c.code)
 
     fun write(text: String) {
-        for(i in text) {
-            println(i)
-            write(i)
+        for(i in 0..<text.length) {
+            val char = text.get(i)
+            write(char)
         }
     }
 
     fun cursor(line: Int, column: Int) {
-        if(column in 0 until COLS) {
-            var address = column
-            if(line in 0 until LINES && line==1) address += 0x40
-            writeCMD(0x80 or address)
-        }
+        writeCMD(0x80 + column + line*0x40 )
     }
 
     fun clear() {
@@ -77,6 +73,11 @@ object LCD {
 }
 
 fun main() {
-    HAL.init()
     LCD.init()
+    LCD.clear()
+    LCD.cursor(0, 1)
+    LCD.write("Hello World")
+    LCD.cursor(1, 0)
+    LCD.write("teste")
+    Time.sleep(5000)
 }
