@@ -32,9 +32,9 @@ fun APP() {
     while (true) {
         TUI.init()
         val coinString = "$coin"
-        LCD.cursor(1, 15 - coinString.length)
+        LCD.cursor(1, MAX_COLUMN - coinString.length - 1)
         LCD.write('$')
-        LCD.cursor(2, 16 - coinString.length)
+        LCD.cursor(1, MAX_COLUMN - coinString.length)
         LCD.write(coinString)
         var line = 0
         var key = ' '
@@ -50,9 +50,9 @@ fun APP() {
             if (coin_acceptor) {
                 coin += 2
                 val coinString = "$coin"
-                LCD.cursor(1, 15 - coinString.length)
+                LCD.cursor(1, MAX_COLUMN - coinString.length - 1)
                 LCD.write('$')
-                LCD.cursor(1, 16 - coinString.length)
+                LCD.cursor(1, MAX_COLUMN - coinString.length)
                 LCD.write(coinString)
             }
             if (coin > 0) {
@@ -89,12 +89,13 @@ fun APP() {
 
                 '*' -> {
                     LCD.cursor(line, 0)
-                    LCD.write("]")
+                    LCD.write(']')
                     LCD.cursor(line, 1)
-                    LCD.write("  ")
+                    LCD.write( ' ')
                     line = if (line == 0) 1 else 0
                     LCD.cursor(line, 1)
-                    LCD.write("}")
+                    LCD.write('}')
+                    key = ' '
                 }
 
                 '#' -> {
@@ -111,7 +112,7 @@ fun APP() {
                         }
                     } else {
                         if (invadersLine2.size > 0 && invadersLine2[0] == key) {
-                            LCD.cursor(line, 16 - invadersLine2.size)
+                            LCD.cursor(line, MAX_COLUMN - invadersLine2.size)
                             val invaderValue2 = invadersLine2[0].toString().toInt()
                             invadersLine2.removeAt(0)
                             LCD.write(' ')
@@ -121,6 +122,7 @@ fun APP() {
                             score += invaderValue2 + 1
                         }
                     }
+                    key = ' '
                 }
             }
             counter++
@@ -144,7 +146,7 @@ fun APP() {
                 }
                 counter = 0
             }
-       }
+        }
 
         val letters = ('A'..'Z').toList().toCharArray()
         var letterPos = 0
@@ -189,10 +191,10 @@ fun APP() {
                     break
                 }
                 '6' -> {
-                    if (cursorPos < NAME_SIZE) {
+                    if (cursorPos < NAME_SIZE - 1) {
                         cursorPos++
                     } else {
-                       cursorPos = NAME_SIZE
+                       cursorPos = NAME_SIZE - 1
                     }
                     LCD.cursor(0, cursorPos)
                     val letterPosNow = TUI.findLetterPos(letters, name[cursorPos - CURSOR_START])
