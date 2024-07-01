@@ -1,8 +1,6 @@
-import java.io.File
-
-class Statistics {
+object Statistics {
     fun getScores(name: String):List<FileAccess.Score>{
-        val scores = FileAccess().readFile(name)
+        val scores = FileAccess.readFile(name)
         return scores
     }
     fun orderAndLimitScores(scores: List<FileAccess.Score>, limit: Int): List<FileAccess.Score> {
@@ -10,21 +8,20 @@ class Statistics {
     }
 
     fun totalGamesAndCoins(games:Int, coins:Int) {
-        FileAccess().appendToFile("statistics.txt", games.toString())
-        FileAccess().appendToFile("statistics.txt", coins.toString())
+        FileAccess.appendToFile("statistics.txt", games.toString() + "\n")
+        FileAccess.appendToFile("statistics.txt", coins.toString())
     }
 }
 
 fun main() {
-    val statistics = Statistics()
-    val fileName = "SIG_scores"
+    val fileName = "SIG_scores.txt"
 
     // Get scores from the file
-    val scores = statistics.getScores(fileName)
+    val scores = Statistics.getScores(fileName)
     println("Scores: $scores")
 
     // Order and limit scores
-    val topScores = statistics.orderAndLimitScores(scores, 5)
+    val topScores = Statistics.orderAndLimitScores(scores, 5)
     println("Top Scores: $topScores")
 
 }
