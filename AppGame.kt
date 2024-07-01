@@ -1,18 +1,13 @@
 import isel.leic.utils.Time
 import kotlin.system.exitProcess
-
-
 const val MAX_COLUMN = 16
 const val NAME_SIZE = 13
 const val CURSOR_START = 5
-
 fun createInvaders(invaders: MutableList<Char>, lin: Int) {
     val randomInvader = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9).random().toString()
     invaders.add((randomInvader[0]))
     refreshInvaders(invaders,lin)
 }
-
-
 fun refreshInvaders(invaders: MutableList<Char>, lin: Int) {
     clrInvaders(lin)
     for (i in 0..<invaders.size) {
@@ -21,30 +16,17 @@ fun refreshInvaders(invaders: MutableList<Char>, lin: Int) {
         LCD.write(invaders[i])
     }
 }
-
 private fun clrInvaders(lin: Int){
     for (i in 3 ..15) {
         LCD.cursor(lin, i)
         LCD.write(' ')
     }
 }
-
 fun APP() {
-    val scoreTable = FileAccess.readFile("SIG_scores.txt")
-    var (games, coin) = FileAccess.readFileGamesAndCoins("statistics.txt")
+    var coin = 0
+    var games = 0
     var M = Maintenance.readM()
-    var i = 0
     while (true) {
-        if(i == 20 || i == scoreTable.size) i = 0
-        if(!M) {
-            TUI.init()
-            val coinString = "$coin"
-            LCD.cursor(1, MAX_COLUMN - coinString.length - 1)
-            LCD.write('$')
-            LCD.cursor(1, MAX_COLUMN - coinString.length)
-            LCD.write(coinString)
-        }
-
         while(M) {
             M = Maintenance.readM()
             Time.sleep(80)
@@ -75,8 +57,8 @@ fun APP() {
                         if (key == '5') {
                             coin = 0
                             games = 0
-                            FileAccess.clearFile("statistics.txt")
-                            Statistics.totalGamesAndCoins(games,coin)
+                            FileAccess().clearFile("statistics.txt")
+                            Statistics().totalGamesAndCoins(games,coin/2)
                         }
                     }
                 }
@@ -107,38 +89,24 @@ fun APP() {
                 }
             }
         }
-
         M = Maintenance.readM()
-        Time.sleep(80)
-
-        val reference = System.currentTimeMillis()
-        var timer = System.currentTimeMillis()
-        var key = KBD.getKey()
-        var coinRead = CoinAcceptor.acceptCoin()
-        while (timer - reference <= 2000) {
-            key = KBD.waitKey(500)
-            if(coinRead) {
-                coin += 2
-                break
-            }
-            if (key != NONE.toChar()) break
-            coinRead = CoinAcceptor.acceptCoin()
-            timer = System.currentTimeMillis()
-        }
-        while(!M && (key != NONE.toChar() || coinRead)) {
+        Time.sleep(500)
+        while(!M) {
             TUI.init()
             val coinString = "$coin"
             LCD.cursor(1, MAX_COLUMN - coinString.length - 1)
             LCD.write('$')
             LCD.cursor(1, MAX_COLUMN - coinString.length)
             LCD.write(coinString)
-            val line = 0
-            var score: Int
-            score = 0
+            var line = 0
+            //var key = ' '
+            //val invadersLine1 = mutableListOf<Char>()
+            //val invadersLine2 = mutableListOf<Char>()
+            var score = 0
+            //var counter = 0
             M = Maintenance.readM()
             Time.sleep(80)
             if(M) break
-
             while (true) {
                 M = Maintenance.readM()
                 Time.sleep(80)
@@ -154,7 +122,9 @@ fun APP() {
                     LCD.write(coinString)
                 }
                 if (coin > 0) {
-                    if (key == '*') {
+                    val startupKEY = KBD.getKey()
+                    if (startupKEY == '*') {
+                        ScoreDisplay.off(true)
                         LCD.clear()
                         LCD.cursor(0, 0)
                         LCD.write("]")
@@ -164,66 +134,32 @@ fun APP() {
                         LCD.write("}")
                         break
                     }
-                    key = KBD.waitKey(200)
                 }
             }
             Time.sleep(80)
             M = Maintenance.readM()
-
             if (!M) {
                 score = shootingMode(line, score)
             }
-
             Time.sleep(80)
-
             if(M) break
             Time.sleep(80)
-
             val values = putNames(coin, score)
             coin = values.first
             val name = values.second
-            Scores.writeScore(score, name)
-            val scores = Statistics.getScores("SIG_scores.txt")
-            val orderedScores = Statistics.orderAndLimitScores(scores,20)
-            FileAccess.clearFile("SIG_scores.txt")
+            Scores().writeScore(score, name)
+            val scores = Statistics().getScores("SIG_scores")
+            val orderedScores = Statistics().orderAndLimitScores(scores,20)
+            FileAccess().clearFile("SIG_scores")
             orderedScores.forEach {
-                Scores.writeScore(it.score,it.name)
+                Scores().writeScore(it.score,it.name)
             }
             games++
-            FileAccess.clearFile("statistics.txt")
-            Statistics.totalGamesAndCoins(games,((coin+0.5)/2).toInt())
-            key = NONE.toChar()
-            coinRead = false
-        }
-        M = Maintenance.readM()
-        Time.sleep(80)
-        if(scoreTable.isNotEmpty() && !M) {
-            LCD.clear()
-            LCD.cursor(0, 1)
-            LCD.write("Space Invaders")
-            LCD.cursor(1, 0)
-            LCD.write("${i + 1}-${scoreTable[i].name}")
-            LCD.cursor(1, MAX_COLUMN - scoreTable[i].score.toString().length)
-            LCD.write("${scoreTable[i].score}")
-            val reference = System.currentTimeMillis()
-            var t = System.currentTimeMillis()
-            while (t - reference <= 2500) {
-                val coin_acceptor = CoinAcceptor.acceptCoin()
-                M = Maintenance.readM()
-                t = System.currentTimeMillis()
-                if (coin_acceptor) {
-                    coin += 2
-                    break
-                }
-                if(M){
-                    break
-                }
-            }
-            i++
+            FileAccess().clearFile("statistics.txt")
+            Statistics().totalGamesAndCoins(games,coin/2)
         }
     }
 }
-
 fun shootingMode(l: Int, s: Int): Int  {
     var line = l
     var key = ' '
@@ -239,14 +175,13 @@ fun shootingMode(l: Int, s: Int): Int  {
             in 100..200 -> 180L
             else -> 150L
         }
-        val keyValue = KBD.waitKey(time)
+        val keyValue = KBD.waitKey(20)
         when (keyValue) {
             in '0'..'9' -> {
                 key = keyValue
                 LCD.cursor(line, 0)
                 LCD.write(key)
             }
-
             '*' -> {
                 LCD.cursor(line, 0)
                 LCD.write(']')
@@ -257,7 +192,6 @@ fun shootingMode(l: Int, s: Int): Int  {
                 LCD.write('}')
                 key = ' '
             }
-
             '#' -> {
                 if (line == 0) {
                     if (invadersLine1.size > 0 && invadersLine1[0] == key) {
@@ -286,7 +220,6 @@ fun shootingMode(l: Int, s: Int): Int  {
             }
         }
         counter++
-
         if (counter == 4) {
             val invaderLine = intArrayOf(1, 2).random()
             if (invadersLine1.size >= 14 || invadersLine2.size >= 14) {
@@ -309,7 +242,6 @@ fun shootingMode(l: Int, s: Int): Int  {
     }
     return score
 }
-
 fun putNames(c: Int, score: Int): Pair<Int, String> {
     val letters = ('A'..'Z').toList().toCharArray()
     var letterPos = 0
@@ -322,6 +254,7 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
     LCD.write("Name:")
     LCD.cursor(0, cursorPos)
     LCD.write(letters[letterPos])
+    val name = charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
     val name = charArrayOf('A', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
 
     while (true) {
@@ -337,7 +270,6 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
                 LCD.write(letters[letterPos])
                 name[cursorPos - CURSOR_START] = letters[letterPos]
             }
-
             '4' -> {
                 if (cursorPos <= CURSOR_START) {
                     cursorPos = CURSOR_START
@@ -348,14 +280,12 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
                     letterPos = letterPosNow
                 }
             }
-
             '5' -> {
                 coin--
                 LCD.clear()
                 Time.sleep(100)
                 break
             }
-
             '6' -> {
                 if (cursorPos < NAME_SIZE - 1) {
                     cursorPos++
@@ -368,7 +298,6 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
                 LCD.write(letters[letterPos])
                 name[cursorPos-CURSOR_START] = letters[letterPos]
             }
-
             '8' -> {
                 LCD.cursor(0, cursorPos)
                 if (letterPos > 0) {
@@ -384,7 +313,6 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
     val n = name.joinToString(separator = "").trim()
     return Pair(coin, n)
 }
-
 fun main(){
     APP()
 }
