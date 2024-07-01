@@ -1,6 +1,7 @@
 import isel.leic.utils.Time
 import kotlin.system.exitProcess
 
+
 const val MAX_COLUMN = 16
 const val NAME_SIZE = 13
 const val CURSOR_START = 5
@@ -29,10 +30,21 @@ private fun clrInvaders(lin: Int){
 }
 
 fun APP() {
-    var coin = 0
-    var games = 0
+    val scoreTable = FileAccess.readFile("SIG_scores.txt")
+    var (games, coin) = FileAccess.readFileGamesAndCoins("statistics.txt")
     var M = Maintenance.readM()
+    var i = 0
     while (true) {
+        if(i == 20 || i == scoreTable.size) i = 0
+        if(!M) {
+            TUI.init()
+            val coinString = "$coin"
+            LCD.cursor(1, MAX_COLUMN - coinString.length - 1)
+            LCD.write('$')
+            LCD.cursor(1, MAX_COLUMN - coinString.length)
+            LCD.write(coinString)
+        }
+
         while(M) {
             M = Maintenance.readM()
             Time.sleep(80)
@@ -63,8 +75,8 @@ fun APP() {
                         if (key == '5') {
                             coin = 0
                             games = 0
-                            FileAccess().clearFile("statistics.txt")
-                            Statistics().totalGamesAndCoins(games,coin/2)
+                            FileAccess.clearFile("statistics.txt")
+                            Statistics.totalGamesAndCoins(games,coin)
                         }
                     }
                 }
@@ -97,21 +109,32 @@ fun APP() {
         }
 
         M = Maintenance.readM()
-        Time.sleep(500)
+        Time.sleep(80)
 
-        while(!M) {
+        val reference = System.currentTimeMillis()
+        var timer = System.currentTimeMillis()
+        var key = KBD.getKey()
+        var coinRead = CoinAcceptor.acceptCoin()
+        while (timer - reference <= 2000) {
+            key = KBD.waitKey(500)
+            if(coinRead) {
+                coin += 2
+                break
+            }
+            if (key != NONE.toChar()) break
+            coinRead = CoinAcceptor.acceptCoin()
+            timer = System.currentTimeMillis()
+        }
+        while(!M && (key != NONE.toChar() || coinRead)) {
             TUI.init()
             val coinString = "$coin"
             LCD.cursor(1, MAX_COLUMN - coinString.length - 1)
             LCD.write('$')
             LCD.cursor(1, MAX_COLUMN - coinString.length)
             LCD.write(coinString)
-            var line = 0
-            //var key = ' '
-            //val invadersLine1 = mutableListOf<Char>()
-            //val invadersLine2 = mutableListOf<Char>()
-            var score = 0
-            //var counter = 0
+            val line = 0
+            var score: Int
+            score = 0
             M = Maintenance.readM()
             Time.sleep(80)
             if(M) break
@@ -131,9 +154,7 @@ fun APP() {
                     LCD.write(coinString)
                 }
                 if (coin > 0) {
-                    val startupKEY = KBD.getKey()
-                    if (startupKEY == '*') {
-                        ScoreDisplay.off(true)
+                    if (key == '*') {
                         LCD.clear()
                         LCD.cursor(0, 0)
                         LCD.write("]")
@@ -143,6 +164,7 @@ fun APP() {
                         LCD.write("}")
                         break
                     }
+                    key = KBD.waitKey(200)
                 }
             }
             Time.sleep(80)
@@ -160,16 +182,44 @@ fun APP() {
             val values = putNames(coin, score)
             coin = values.first
             val name = values.second
-            Scores().writeScore(score, name)
-            val scores = Statistics().getScores("SIG_scores")
-            val orderedScores = Statistics().orderAndLimitScores(scores,20)
-            FileAccess().clearFile("SIG_scores")
+            Scores.writeScore(score, name)
+            val scores = Statistics.getScores("SIG_scores.txt")
+            val orderedScores = Statistics.orderAndLimitScores(scores,20)
+            FileAccess.clearFile("SIG_scores.txt")
             orderedScores.forEach {
-                Scores().writeScore(it.score,it.name)
+                Scores.writeScore(it.score,it.name)
             }
             games++
-            FileAccess().clearFile("statistics.txt")
-            Statistics().totalGamesAndCoins(games,coin/2)
+            FileAccess.clearFile("statistics.txt")
+            Statistics.totalGamesAndCoins(games,((coin+0.5)/2).toInt())
+            key = NONE.toChar()
+            coinRead = false
+        }
+        M = Maintenance.readM()
+        Time.sleep(80)
+        if(scoreTable.isNotEmpty() && !M) {
+            LCD.clear()
+            LCD.cursor(0, 1)
+            LCD.write("Space Invaders")
+            LCD.cursor(1, 0)
+            LCD.write("${i + 1}-${scoreTable[i].name}")
+            LCD.cursor(1, MAX_COLUMN - scoreTable[i].score.toString().length)
+            LCD.write("${scoreTable[i].score}")
+            val reference = System.currentTimeMillis()
+            var t = System.currentTimeMillis()
+            while (t - reference <= 2500) {
+                val coin_acceptor = CoinAcceptor.acceptCoin()
+                M = Maintenance.readM()
+                t = System.currentTimeMillis()
+                if (coin_acceptor) {
+                    coin += 2
+                    break
+                }
+                if(M){
+                    break
+                }
+            }
+            i++
         }
     }
 }
@@ -189,7 +239,7 @@ fun shootingMode(l: Int, s: Int): Int  {
             in 100..200 -> 180L
             else -> 150L
         }
-        val keyValue = KBD.waitKey(20)
+        val keyValue = KBD.waitKey(time)
         when (keyValue) {
             in '0'..'9' -> {
                 key = keyValue
