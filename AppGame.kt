@@ -272,7 +272,7 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
     LCD.write("Name:")
     LCD.cursor(0, cursorPos)
     LCD.write(letters[letterPos])
-    val name = charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
+    val name = charArrayOf('A', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
 
     while (true) {
         val key = KBD.getKey()
