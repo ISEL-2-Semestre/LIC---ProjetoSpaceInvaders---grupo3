@@ -41,8 +41,8 @@ object FileAccess {
     }
 
     fun readFileGamesAndCoins(name: String): Pair<Int, Int> {
-        var coins = 0
-        var games = 0
+        var coins: Int
+        var games: Int
         val reader = BufferedReader(FileReader(name))
         reader.use { r ->
             val txt = r.readLines()
