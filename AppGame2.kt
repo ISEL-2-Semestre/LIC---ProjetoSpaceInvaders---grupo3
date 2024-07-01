@@ -49,6 +49,7 @@ fun APP() {
             M = Maintenance.readM()
             Time.sleep(80)
             if(!M) break
+            ScoreDisplay.setScore(1000000)
             LCD.clear()
             LCD.cursor(0, 1)
             LCD.write("On Maintenance")
@@ -140,6 +141,7 @@ fun APP() {
             if(M) break
 
             while (true) {
+                ScoreDisplay.setScore(1000000)
                 M = Maintenance.readM()
                 Time.sleep(80)
                 if(M) break
