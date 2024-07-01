@@ -1,8 +1,10 @@
 import isel.leic.utils.Time
 import kotlin.system.exitProcess
+
 const val MAX_COLUMN = 16
 const val NAME_SIZE = 13
 const val CURSOR_START = 5
+
 fun createInvaders(invaders: MutableList<Char>, lin: Int) {
     val randomInvader = intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9).random().toString()
     invaders.add((randomInvader[0]))
@@ -23,8 +25,8 @@ private fun clrInvaders(lin: Int){
     }
 }
 fun APP() {
-    var coin = 0
-    var games = 0
+    val scoreTable = FileAccess.readFile("SIG_scores.txt")
+    var (games, coin) = FileAccess.readFileGamesAndCoins("statistics.txt")
     var M = Maintenance.readM()
     while (true) {
         while(M) {
@@ -43,7 +45,7 @@ fun APP() {
                     LCD.cursor(0, 0)
                     LCD.write("Games:$games")
                     LCD.cursor(1, 0)
-                    LCD.write("Coins:$coin")
+                    LCD.write("Coins:${((coin+0.5)/2).toInt()}")
                     val keyValueNext = KBD.waitKey(1500)
                     if (keyValueNext == '#') {
                         LCD.clear()
@@ -57,8 +59,8 @@ fun APP() {
                         if (key == '5') {
                             coin = 0
                             games = 0
-                            FileAccess().clearFile("statistics.txt")
-                            Statistics().totalGamesAndCoins(games,coin/2)
+                            FileAccess.clearFile("statistics.txt")
+                            Statistics.totalGamesAndCoins(games,coin/2)
                         }
                     }
                 }
@@ -147,19 +149,20 @@ fun APP() {
             val values = putNames(coin, score)
             coin = values.first
             val name = values.second
-            Scores().writeScore(score, name)
-            val scores = Statistics().getScores("SIG_scores")
-            val orderedScores = Statistics().orderAndLimitScores(scores,20)
-            FileAccess().clearFile("SIG_scores")
+            Scores.writeScore(score, name)
+            val scores = Statistics.getScores("SIG_scores.txt")
+            val orderedScores = Statistics.orderAndLimitScores(scores,20)
+            FileAccess.clearFile("SIG_scores.txt")
             orderedScores.forEach {
-                Scores().writeScore(it.score,it.name)
+                Scores.writeScore(it.score,it.name)
             }
             games++
-            FileAccess().clearFile("statistics.txt")
-            Statistics().totalGamesAndCoins(games,coin/2)
         }
+        FileAccess.clearFile("statistics.txt")
+        Statistics.totalGamesAndCoins(games,((coin+0.5)/2).toInt())
     }
 }
+
 fun shootingMode(l: Int, s: Int): Int  {
     var line = l
     var key = ' '
@@ -175,7 +178,7 @@ fun shootingMode(l: Int, s: Int): Int  {
             in 100..200 -> 180L
             else -> 150L
         }
-        val keyValue = KBD.waitKey(20)
+        val keyValue = KBD.waitKey(time)
         when (keyValue) {
             in '0'..'9' -> {
                 key = keyValue
@@ -242,6 +245,7 @@ fun shootingMode(l: Int, s: Int): Int  {
     }
     return score
 }
+
 fun putNames(c: Int, score: Int): Pair<Int, String> {
     val letters = ('A'..'Z').toList().toCharArray()
     var letterPos = 0
@@ -254,7 +258,6 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
     LCD.write("Name:")
     LCD.cursor(0, cursorPos)
     LCD.write(letters[letterPos])
-    val name = charArrayOf(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
     val name = charArrayOf('A', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
 
     while (true) {
@@ -313,6 +316,7 @@ fun putNames(c: Int, score: Int): Pair<Int, String> {
     val n = name.joinToString(separator = "").trim()
     return Pair(coin, n)
 }
+
 fun main(){
     APP()
 }
