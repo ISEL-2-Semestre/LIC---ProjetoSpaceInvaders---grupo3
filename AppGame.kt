@@ -33,6 +33,7 @@ fun APP() {
             M = Maintenance.readM()
             Time.sleep(80)
             if(!M) break
+            ScoreDisplay.setScore(1000000)
             LCD.clear()
             LCD.cursor(0, 1)
             LCD.write("On Maintenance")
@@ -101,15 +102,12 @@ fun APP() {
             LCD.cursor(1, MAX_COLUMN - coinString.length)
             LCD.write(coinString)
             var line = 0
-            //var key = ' '
-            //val invadersLine1 = mutableListOf<Char>()
-            //val invadersLine2 = mutableListOf<Char>()
             var score = 0
-            //var counter = 0
             M = Maintenance.readM()
             Time.sleep(80)
             if(M) break
             while (true) {
+                ScoreDisplay.setScore(1000000)
                 M = Maintenance.readM()
                 Time.sleep(80)
                 if(M) break
