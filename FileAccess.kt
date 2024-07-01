@@ -47,7 +47,7 @@ object FileAccess {
         reader.use { r ->
             val txt = r.readLines()
             games = txt[0].toInt()
-            coins = txt[1].toInt() * 2
+            coins = txt[1].toInt()
         }
         return games to coins
     }
