@@ -1,18 +1,15 @@
-class Scores {
+object Scores {
 
-    private val fileAccess = FileAccess()
-    private val fileName = "SIG_scores"
+    private val fileName = "SIG_scores.txt"
 
     fun writeScore(score: Int, player: String) {
         val formatoScore = "$score;$player\n"
-        fileAccess.appendToFile(fileName, formatoScore)
+        FileAccess.appendToFile(fileName, formatoScore)
     }
 }
 
 fun main() {
-    val scores = Scores()
-
     // Example scores
-    scores.writeScore(107, "Joe Biden")
-    scores.writeScore(49, "Ninja")
+    Scores.writeScore(107, "Joe Biden")
+    Scores.writeScore(49, "Ninja")
 }
