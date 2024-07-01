@@ -2,8 +2,10 @@ import java.io.File
 import java.io.BufferedReader
 import java.io.FileReader
 
-class FileAccess {
+object FileAccess {
+
     data class Score(val score:Int, val name: String)
+
     fun writeFile(name: String, content: String) {
         val file = File(name)
         file.writeText(content)
@@ -36,5 +38,17 @@ class FileAccess {
         val file = File(name)
         file.writeText("") // This will overwrite the file with an empty string
         println("File cleared: $name")
+    }
+
+    fun readFileGamesAndCoins(name: String): Pair<Int, Int> {
+        var coins = 0
+        var games = 0
+        val reader = BufferedReader(FileReader(name))
+        reader.use { r ->
+            val txt = r.readLines()
+            games = txt[0].toInt()
+            coins = txt[1].toInt() * 2
+        }
+        return games to coins
     }
 }
